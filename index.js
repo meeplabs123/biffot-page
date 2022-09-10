@@ -6,7 +6,16 @@ function getFiles() {
         files.forEach(file => {
             var nom = file.split('.');
             if(nom[nom.length - 1] == 'html') {
-                console.log(file.replace('.' + nom[nom.length - 1], ''));
+                fs.readFile(transFolder + file, 'utf8', (err, data) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    let _one = data.split('<title>')[0];
+                    let _two = data.split('</title>')[1];
+                    var title = data.replace(_two, '').replace(_one, '').replace('<title>', '').replace('</title>', '');
+                    console.log('Ticket Name: ' + title);
+                });
             }
         });
     });
