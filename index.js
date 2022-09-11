@@ -1,6 +1,7 @@
 const transFolder = './transcripts/';
 const { clear } = require('console');
 const fs = require('fs');
+const config = require('./config.json');
 
 var HTMLParser = require('node-html-parser');
 var express = require('express');
@@ -106,6 +107,10 @@ app.get('/transcripts/*', async (req, res) => {
 })
 
 app.get('/site/*', async (req, res) => {
+    if(req.path.includes('html')) { 
+        res.send('access denied loserrrr');
+        return;
+     }
     res.sendFile(__dirname + req.path);
 })
 
