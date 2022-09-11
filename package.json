@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/meeplabs123/biffot-page/issues"
   },
-  "homepage": "https://github.com/meeplabs123/biffot-page#readme"
+  "homepage": "https://github.com/meeplabs123/biffot-page#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "node-html-parser": "^6.0.0"
+  }
 }
