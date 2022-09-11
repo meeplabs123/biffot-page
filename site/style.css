@@ -44,13 +44,13 @@ body {
 }
 
 a {
-	color:#fefefe;
-	text-decoration:none;
+	color: lightblue;
+	text-decoration: underline;
 }
 
 a:hover {
-	color:#fefefe;
-	text-decoration:none;
+	color: lightskyblue;
+	text-decoration: none;
 }
 
 #top {
