@@ -60,7 +60,7 @@ async function parseData(data, filename) {
         items.forEach((item, index) => {
             comprehendItem(item, obj, filename);
         })
-        publicdata.html = publicdata.html.replace('<!--more-content-here-->', '<h4>' + obj.title + ' <a href="transcripts/' + publicdata.listings[obj.title] + '">View</a></h4><h3>Oppened By: ' + obj.oppenedby + '</h3><h3>Oppened On: ' + obj.oppenedtime + '</h3><br><br><!--more-content-here-->')
+        publicdata.html = publicdata.html.replace('<!--more-content-here-->', '<div class="transcript"><h4>' + obj.title + ' <a href="transcripts/' + publicdata.listings[obj.title] + '">View</a></h4><h3>Oppened By: ' + obj.oppenedby + '</h3><h3>Oppened On: ' + obj.oppenedtime + '</h3></div><br><br><!--more-content-here-->')
         publicdata.ready = true;
     }, 1000);
 }
