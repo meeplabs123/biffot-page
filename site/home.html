@@ -2,6 +2,42 @@
 <html xmlns="https://www.w3.org/1999/xhtml/">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+        font-family: Arial;
+        }
+
+        * {
+        box-sizing: border-box;
+        }
+
+        input[type=text] {
+        padding: 10px;
+        font-size: 17px;
+        border: 1px solid grey;
+        float: left;
+        width: 80%;
+        background: #f1f1f1;
+        }
+
+        button {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background: #2196F3;
+        color: white;
+        font-size: 17px;
+        border: 1px solid grey;
+        border-left: none;
+        cursor: pointer;
+        }
+
+        button:hover {
+        background: #0b7dda;
+        }
+    </style>
     <title>Transcript Explorer</title>
     <link rel="stylesheet" type="text/css" href="site/style.css" />
 
@@ -31,8 +67,20 @@
 
             </div><!--header-->
 
+            <script>
+                function submitsearch() {
+                    var search = document.getElementById('search');
 
+                    getElementById('container').innerHTML = '';
+
+                    search.value = '';
+                }
+            </script>
+
+            <input id="search" type="text" placeholder="Search.." name="search">
+            <button id="submitsearch" onclick="submitsearch()"><i class="fa fa-search"></i></button>
             <div id="container">
+
 
                 <!--more-content-here-->
 

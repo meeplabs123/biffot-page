@@ -1,12 +1,14 @@
+//https://discordjs.guide/oauth2/
+
 const transFolder = './transcripts/';
 const { clear } = require('console');
 const fs = require('fs');
 const config = require('./config.json');
 
+var https = require('https');
 var HTMLParser = require('node-html-parser');
 var express = require('express');
 var app = express();
-var port = 8000;
 
 publicdata = {};
 
@@ -72,6 +74,7 @@ async function comprehendItem(element, target, filename) {
         target['oppenedtime'] = element.childNodes[1].childNodes[1].childNodes[2].innerText;
         target['oppenedby'] = element.childNodes[1].childNodes[1].childNodes[3].lastChild.childNodes[0].childNodes[0].childNodes[0].attributes.title;
     }
+
 }
 
 async function doWork() {
@@ -90,11 +93,71 @@ function itsReady(obj) {
     obj.send(publicdata.html);
 }
 
+function auth() { return 'https://discord.com/api/oauth2/authorize?client_id=' + config.clientId + '&redirect_uri=' + config.redirectUri + '&response_type=token&scope=' + config.scope }
+
 app.get('/', async (req, res) => {
     await doWork();
-    //res.sendFile(__dirname + '/site/home.html')
-    checkReady(res);
+    fs.readFile('./oauth/main.html', 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        var genScript = '<script>window.location = "' + auth() + '"</script>';
+
+        if(req.query.action) {
+            if(req.query.action.includes('[auth]')) {
+                data = data.replace('<!--script-goes-here-->', genScript);
+            }
+            if(req.query.action.includes('[data]')) {
+                var oauthdata = req.query.action.replace('[data]', '');
+                oauthdata = Buffer.from(oauthdata, 'base64').toString();
+                oauthdata = Object.fromEntries(new URLSearchParams(oauthdata));
+                
+                var requestdata
+                var request = https.request({
+                    hostname: 'discord.com',
+                    path: `/api/users/@me/guilds/${config.guildId}/member`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `${oauthdata.token_type} ${oauthdata.access_token}`
+                    }
+                }, response => {
+                    response.on('data', d => {
+                        requestdata = JSON.parse(d.toString());
+                        parseResponseData(requestdata, data, req, res);
+                    });
+                });
+                request.on('error', error => {
+                    console.error(error);
+                });
+                request.end();
+                
+                //data = data.replace('<!--content-goes-here-->', '<script>if(window.location.pathname == "/app") { } else { window.location.href = window.location.origin + "/app" }</script>')
+            }
+        }
+        if(!req.query.action) {
+            res.send(data);
+        } else {
+            if(!req.query.action.includes('[data]')) {
+                res.send(data);
+            }
+        }
+    });
 });
+
+function parseResponseData(dataobject, data, req, res) {
+    if(dataobject.retry_after) {
+        console.log('You are being RATE LIMITED...');
+        setTimeout(parseResponseData, 100, dataobject, data, req, res);
+    } else {
+        if(dataobject.roles.includes(config.roleId)) {
+            console.log(`${dataobject.user.username}#${dataobject.user.discriminator} authenticated on ${req.ip}.`);
+            
+
+            checkReady(res)
+        }
+    }
+}
 
 app.get('/transcripts/*', async (req, res) => {
     fs.readFile('.' + req.path, 'utf8', (err, data) => {
@@ -114,6 +177,6 @@ app.get('/site/*', async (req, res) => {
     res.sendFile(__dirname + req.path);
 })
 
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`);
+app.listen(config.port, () => {
+    console.log(`App listening on port ${config.port}`);
 });
